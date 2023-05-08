@@ -203,7 +203,6 @@ void FaintParticleTriggerAlgorithm::AddHits(FptHitVectorPtr hits,const I3Geometr
         else{
         //Check if previous window was above threshold
                      if (timeHits_current->size()>0){
-                         std::cout <<" cleared"<<std::endl;
                          triggers_.push_back(*timeHits_current);
                          triggerCount_++;
                          timeHits_current->clear();
@@ -220,7 +219,6 @@ void FaintParticleTriggerAlgorithm::AddHits(FptHitVectorPtr hits,const I3Geometr
     else {
     //Check if previous window was above threshold
                  if (timeHits_current->size()>0){
-                     std::cout <<" cleared"<<std::endl;
                      triggers_.push_back(*timeHits_current);
                      triggerCount_++;
                      timeHits_current->clear();
