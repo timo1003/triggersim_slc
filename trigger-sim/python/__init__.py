@@ -68,7 +68,7 @@ def TriggerSim(tray,
                          dataclasses.STRING : "ClusterTrigger",
                          dataclasses.VOLUME : "CylinderTrigger",
                          dataclasses.SLOW_PARTICLE : "SlowMonopoleTrigger",
-                         dataclasses.SLC : "SlcTrigger"}
+                         dataclasses.FAINT_PARTICLE : "FaintParticleTrigger"}
                         
     for tkey, ts in tsmap :
         # skip any triggers we don't have simulation modules for

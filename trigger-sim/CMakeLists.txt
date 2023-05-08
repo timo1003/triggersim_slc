@@ -13,15 +13,15 @@ i3_add_library(trigger-sim
   private/trigger-sim/modules/CylinderTrigger.cxx
   private/trigger-sim/modules/I3Pruner.cxx
   private/trigger-sim/modules/SlowMonopoleTrigger.cxx
-  private/trigger-sim/modules/SlcTrigger.cxx
+  private/trigger-sim/modules/FaintParticleTrigger.cxx
   # The algorithms
   private/trigger-sim/algorithms/ClusterTriggerAlgorithm.cxx
   private/trigger-sim/algorithms/GlobalTriggerSim.cxx
   private/trigger-sim/algorithms/SimpleMajorityTriggerAlgorithm.cxx
   private/trigger-sim/algorithms/CylinderTriggerAlgorithm.cxx
-  private/trigger-sim/algorithms/SlcTriggerAlgorithm.cxx
+  private/trigger-sim/algorithms/FaintParticleTriggerAlgorithm.cxx
   private/trigger-sim/algorithms/TimeWindow.cxx
-  private/trigger-sim/algorithms/SlcTimeWindow.cxx
+  private/trigger-sim/algorithms/FPTTimeWindow.cxx
   # The utilities
   private/trigger-sim/utilities/DOMSetFunctions.cxx
   private/trigger-sim/utilities/GTSUtils.cxx
