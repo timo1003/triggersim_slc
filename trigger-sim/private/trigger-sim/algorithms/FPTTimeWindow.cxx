@@ -2,7 +2,7 @@
 #include <boost/foreach.hpp>
 
 using namespace std;
-
+extern int global= 0;
 FPTTimeWindow::FPTTimeWindow(unsigned int hit_min, unsigned int hit_max, double slcfraction_min,double time_window, double time_window_separation) 
   : hit_min_(hit_min), hit_max_(hit_max),slcfraction_min_(slcfraction_min), time_window_(time_window), time_window_separation_(time_window_separation) 
 {
@@ -19,6 +19,7 @@ FPTTimeWindow::~FPTTimeWindow() {}
 
 FptHitIterPairVectorPtr FPTTimeWindow::FPTFixedTimeWindows(FptHitVectorPtr hits,double time_window_separation)
 {
+  global++;
   // The return variable is a std::vector of pairs, each pair is the begin/end iterators for the time window
   FptHitIterPairVectorPtr FPTtriggerWindows(new FptHitIterPairVector());
 
@@ -53,14 +54,18 @@ FptHitIterPairVectorPtr FPTTimeWindow::FPTFixedTimeWindows(FptHitVectorPtr hits,
     // Define the times of this trigger window
     double startTime = timeWindowStart;
     double stopTime  = startTime + time_window_;
-    //cout <<"timewin"<<startTime<<endl;
-    //cout <<"timewinend"<<stopTime<<endl;
+    
     log_debug("TimeWindow = (%f, %f)", startTime, stopTime);
-     
- 
+    /*
+    if (global==26){
+        cout<<"startTime"<<startTime<<endl;
+        cout<<"startTime"<<stopTime<<endl;
+    }
+    */
+   
       
-    // Initialize the counter (including startingHit)
-    unsigned int count = 1;
+    // Initialize the counter
+    unsigned int count = 0;
 
     // Initialize the begin/end pointers
     //set beginHit hit for first time window  
@@ -78,7 +83,7 @@ FptHitIterPairVectorPtr FPTTimeWindow::FPTFixedTimeWindows(FptHitVectorPtr hits,
     FptHitVector::const_iterator FirstHitInWindow;
     for (FirstHitInWindow = beginHit; FirstHitInWindow != hits->end(); FirstHitInWindow++) { 
             //Set the beginHit in the new timewindow
-            if (FirstHitInWindow->time >= startTime && FirstHitInWindow->time <= stopTime){
+            if (FirstHitInWindow->time >= startTime && FirstHitInWindow->time < stopTime){
                     beginHit=FirstHitInWindow;
                     beginHit_set = true;
                     break;
@@ -97,26 +102,42 @@ FptHitIterPairVectorPtr FPTTimeWindow::FPTFixedTimeWindows(FptHitVectorPtr hits,
 
     // Inner loop over all later hits
     FptHitVector::const_iterator nextHit;
-    for (nextHit = beginHit + 1; nextHit != hits->end(); nextHit++) {
-      
+    bool end_reached = false;
+    for (nextHit = beginHit; nextHit != hits->end(); nextHit++) {
+       
       // The time of the next hit
       double nextTime = nextHit->time;
       log_debug("  NextTime = %f", nextTime);
-
+      
       // Check if it falls in the time window
       if (nextTime < startTime) {
     // error, hits should be time ordered
-      } else if (nextTime < stopTime) {
+      } 
+      else if (nextTime >= stopTime){
+          end_reached = true;
+          endHit = nextHit;
+      }
+        
+      else if (nextTime < stopTime) {
     // in window, increment counter
-    count++;
+        count++;
+        if (nextTime == hits->back().time) {
+        if (global==26){
+    }
+         end_reached =true;
+         endHit =hits->end();
+            }
+          
+      }
+
     log_debug("    Hit inside window, counter = %d", count);
-      } else {
+     if (end_reached ){
     // Hit is beyond window, check for trigger
     log_debug("    Hit outside window...");
 
     if (count >= hit_min_ && count <= hit_max_) {
       log_debug("      but we have a trigger, save pointers");
-      endHit = nextHit;
+      
 
       // Save the pointers
       //cout <<"timewin"<<startTime<<endl;
@@ -127,30 +148,52 @@ FptHitIterPairVectorPtr FPTTimeWindow::FPTFixedTimeWindows(FptHitVectorPtr hits,
       int hlc_count = 0;
       int slc_count = 0;  
       FptHitVector::const_iterator nextHit2;
-      for (nextHit2 = hits->begin(); nextHit2 != hits->end(); nextHit2++) {
-            double hitTime = nextHit2->time;
-            if (hitTime >=startTime && hitTime < stopTime){
-            //std::cout<<"bed"<<slc<<std::endl;
-                if (nextHit2->lc){
-                    hlc_count++;
-                    }
-                else{
-                    slc_count++;
-                    }
-            }
+      if (nextTime >= stopTime){
+          for (nextHit2 = hits->begin(); nextHit2 != hits->end(); nextHit2++) {
+                double hitTime = nextHit2->time;
+                if (hitTime >=startTime && hitTime < stopTime){     
+                    if (nextHit2->lc){
+                        hlc_count++;
+                        }
+                    else{
+                        slc_count++;
+                        }
+                }
+          }
+    }
+      else{
+              for (nextHit2 = hits->begin(); nextHit2 != hits->end(); nextHit2++) {
+                double hitTime = nextHit2->time;
+                if (hitTime >=startTime && hitTime <= stopTime){ 
+
+                    if (nextHit2->lc){
+                        hlc_count++;
+                        }
+                    else{
+                        slc_count++;
+                        }
+                }
+          
+          
+              }
+          
       }
       double slc_fraction = static_cast<double>(slc_count) / (slc_count + hlc_count);
       if (slc_fraction > slcfraction_min_) {
+          if (global==26){
           /*
+          cout <<"Hits timewindow"<<count<<endl;
           cout <<"timewin"<<startTime<<endl;
           cout <<"timewinend"<<stopTime<<endl;
           cout <<"Hits timewindow"<<count<<endl;
           cout <<"SLCfrac timewin"<<slc_fraction<<endl;
-          */
+         */
+          }
           FptHitIterPair FPTtriggerWindow(beginHit, endHit);
           FPTtriggerWindows->push_back(FPTtriggerWindow);
           break;
        }
+       else {break;}
 
       // Set startingHit to endHit
     } 

@@ -18,6 +18,7 @@
 #include <dataclasses/I3Direction.h>
 #include <icetray/I3Units.h>
 using namespace boost::assign;
+int global1  = 0;
  double double_velocity_min_;
   double double_velocity_max_;
   unsigned int double_min_;
@@ -58,7 +59,7 @@ FaintParticleTriggerAlgorithm::~FaintParticleTriggerAlgorithm() {}
 
 void FaintParticleTriggerAlgorithm::AddHits(FptHitVectorPtr hits,const I3GeometryConstPtr &geo)
 {
-
+  global1++;
   log_debug("Adding %zd hits to FaintParticleTigger", hits->size());
 
   /*------------------------------------------------------------*
@@ -138,6 +139,7 @@ void FaintParticleTriggerAlgorithm::AddHits(FptHitVectorPtr hits,const I3Geometr
                  std::cout <<"doubles"<<number_doubles<<std::endl;
                  */
                  //Check if previous window was above threshold
+                
                  if (timeHits_current->size()>0){
                      for (auto it = timeHits->begin(); it != timeHits->end(); ++it) {
                         // Check if the current element already exists in timeHits_current
