@@ -1,9 +1,7 @@
 /**
- * copyright  (C) 2006
- * the icecube collaboration
- * $Id: 
+
  *
- * @file SimpleMajorityTriggerAlgorithm.h
+ * @file FaintParticleTriggerAlgorithm.h
  * @version
  * @date
  * @author toale

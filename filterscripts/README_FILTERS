@@ -1,0 +1,84 @@
+Feb 11, 2015 - Erik Blaufuss (blaufuss@icecube.umd.edu)
+Updated Mar 9, 2021 - now with Github flavor!
+
+So you want (or need) to write a filter for the  physics run?  This guide should help you get
+started with developing your filter, giving you links to the software you need, links to data
+and simulation files, and how to write your own filter
+and matching tray segment to run it online.i
+
+If you still have questions, contact Erik via email (blaufuss AT umd.edu) or @blaufuss on slack
+
+1. Filter "names".  The name of a filter in the as it shows up
+in "FilterMask" is now a choice for the WGs.  Guidance is
+as follows:
+- if your filter is essentially unchanged from 2013, keep the
+same name as 2013  (example:  "EHEFilter_13").  If it is substantially
+changed in 2014 or a future year, please update the year reflecting
+when it was updated (example:  "EHEFilter_15" if changed for the 2015 season)
+
+This will make it easier to apply the same selection across
+several years of data when the filter is unchanged.
+
+-- Writing a filter --
+To provide a filter, essentially two thigns are needed:
+
+A) A filterscripts module that makes the selection, as
+have been provided in previous years.  This module
+should take frame objects from reconstructions and
+other frame objects to decide if a P-frame should be
+selected.  (No longer called jeb-filter-XXXX to reflect
+the unified approach to filtering thru L2)
+
+Note: Filter modules from previous season are included. WGs please
+check, update as needed.
+
+B) A tray segment to run any reconstructions or
+calculations beyond what is already done in the provided
+base processing segment.  Segments reside in
+the filterscripts/python directory.
+
+Much of the base processing is provided here:
+filterscripts/python/basproc.py
+
+Your filter tray segment can be added to IceCube_BaseProc.py for testing,
+but I generally add all filters to a single tray segment in the end:
+filterscripts/python/all_filters.py
+
+--Running and testing the filters--
+
+There is a provided "driver" script:
+
+filterscripts/resources/scripts/IceCube_BaseProc.py
+
+This script takes several options:
+-g -> GCD i3 file name/path
+-i -> Input i3 file name/path
+-o -> Output file name/path
+-d -> Decode raw data using the decoder services,
+   use if your data is not decoded into raw I3DOMLaunches.
+--simdata -> Add the additional modules needed to 
+	  Q-convert and trigger simulation data, for example
+	  Corsika data from set 4333:
+	  http://wiki.icecube.wisc.edu/index.php/Simulation_Production#IC86.28Other.29
+-p -> don't run anything, but expand all tray segments and print
+      a full pretty-print of the tray as configured.
+
+Examples for use:
+
+see file:
+
+filterscripts/resources/scripts/run_me.sh
+
+for data and simulation examples.
+
+Data?
+
+See the TFT 2014 wiki page for links to data sets (data and simulation)
+
+http://wiki.icecube.wisc.edu/index.php/TFT_2015_Season_Planning
+
+(unfiltered, so mostly correct, contact Erik if there are other needs)
+
+PLEASE:  submit all your changes or additions as a PULL REQUEST in Github.  I'll do
+my best to review them quickly
+

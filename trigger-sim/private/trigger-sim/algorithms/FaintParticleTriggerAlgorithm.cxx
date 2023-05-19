@@ -1,8 +1,5 @@
 /**
- * copyright  (C) 2006
- * the icecube collaboration
- * $Id:
- *
+
  * @file FaintParticleTriggerAlgorithm.cxx
  * @version
  * @date
@@ -139,7 +136,23 @@ void FaintParticleTriggerAlgorithm::AddHits(FptHitVectorPtr hits,const I3Geometr
                  std::cout <<"doubles"<<number_doubles<<std::endl;
                  */
                  //Check if previous window was above threshold
-                
+                 /*
+                 int hlc_count = 0;
+                 int slc_count = 0;  
+                 FptHitVector::const_iterator nextHit2;
+                 for (nextHit2 = timeHits->begin(); nextHit2 != timeHits->end(); nextHit2++) {
+                        double hitTime = nextHit2->time;
+                            if (nextHit2->lc){
+                                hlc_count++;
+                                }
+                            else{
+                                slc_count++;
+                                }
+                            }
+                 double slc_fraction = static_cast<double>(slc_count) / (slc_count + hlc_count);
+                 std::cout <<slc_fraction<<std::endl;
+                 */
+
                  if (timeHits_current->size()>0){
                      for (auto it = timeHits->begin(); it != timeHits->end(); ++it) {
                         // Check if the current element already exists in timeHits_current

@@ -1,0 +1,291 @@
+
+IC86_2011
+=========
+
+Documentation and examples for running L1 and L2 filtering on IC86_2011 
+data and simulation.
+
+Environment Setup
+-----------------
+
+First obtain a copy of the IceRec meta-project::
+
+    $ svn co http://code.icecube.wisc.edu/svn/meta-projects/icerec/releases/IC2011-L2_V12-08-00_IceSim4compat_V3 src
+    $ mkdir build
+    $ cd build
+    $ cmake -DCMAKE_BUILD_TYPE=Release ../src
+    $ make
+
+.. note::
+
+   The IceRec version listed here is the special L2 variant for 2011, 
+   with IceSim 4 compatibility.
+
+.. hint::
+
+    :code:`make -j12` on servers will run 12 threads of compiling in parallel,
+    building your meta-project faster.
+
+Possible Errors
+'''''''''''''''
+
+* glshovel
+
+  A glshovel cmake error like this::
+
+    CMake Error: The following variables are used in this project, but they are set to NOTFOUND.
+    Please set them or make sure they are set and tested correctly in the CMake files:
+    GLUT_Xmu_LIBRARY (ADVANCED)
+        linked by target "glshovel" in directory /scratch/dschultz/IC86_2011/src/glshovel
+        
+    -- Configuring incomplete, errors occurred!
+    
+  The solution is to delete the glshovel project, since it is old and unsupported.
+    
+  ::
+    
+    $ rm -rf ../src/glshovel
+
+
+Experimental Data
+-----------------
+
+An example of how to run L2 on a PFFilt file (not that you should ever do
+this yourself, as production has already done it.)
+
+I am assuming you have a GCD and i3 file::
+
+    $ cp /data/exp/IceCube/2011/filtered/PFFilt/0608/PFFilt_PhysicsTrig_PhysicsFiltering_Run00118300_Subrun00000000_00000000.tar.bz2 .
+    $ cp /data/exp/IceCube/2011/filtered/level2/0608/Level2_IC86.2011_data_Run00118300_0608_GCD.i3.gz .
+
+Next, load the environment::
+
+    $ ./env-shell.sh
+    ************************************************************************
+    *                                                                      *
+    *                   W E L C O M E  to  I C E T R A Y                   *
+    *                                                                      *
+    * Version icerec.releases.IC2011-L2_V12-08-00_IceSim4compat     r124504 *
+    *                                                                      *
+    *                You are welcome to visit our Web site                 *
+    *                        http://icecube.umd.edu                        *
+    *                                                                      *
+    ************************************************************************
+    
+    Icetray environment has:
+       I3_SRC       = /scratch/dschultz/IC86_2011/src
+       I3_BUILD     = /scratch/dschultz/IC86_2011/build
+       I3_PORTS     = /cvmfs/icecube.wisc.edu/py2-v1/RHEL_6_x86_64/i3ports
+       Python       = Python 2.7.3
+
+The :code:`level2_Master.py` script has various options::
+
+    $ python lib/icecube/std_processing/level2_Master.py -h 
+    Logging configured from file ./log4cplus.conf
+    Loading daq-decode........................................ok
+    Loading libBadDomList.....................................ok
+    Module iceprod.modules not found. Will not define IceProd Class
+    Usage: level2_Master.py [options]
+    
+    Options:
+      -h, --help            show this help message and exit
+      -i INDIR, --indir=INDIR
+                            directory where the input files are located
+      -o OUTDIR, --outdir=OUTDIR
+                            write output to this directory
+      -t, --tar             Input files are tared in the data warehouse
+      -m, --mc              do we process MC or data?
+      -q, --qify            Should we Qify MC?  By default MC files are already in
+                            Q format
+      -r RUNNUM, --runnumber=RUNNUM
+                            run to process (for MC: dataset to process)
+      -f FILENUM, --filenumber=FILENUM
+                            for data: run part number, for MC: file number of
+                            dataset
+      -n NUMEVENTS, --nevents=NUMEVENTS
+                            Number of events to process (default: all)
+      -d, --dogcd           Use the Database to get geometry, calibration and
+                            detector status
+      -g GCDFILE, --gcdfile=GCDFILE
+                            Manually specify the GCD file to be used.   For data,
+                            you should generate a GCD first
+      -y MCTYPE, --mctype=MCTYPE
+                            type of MC to be processed: corsika, corsika_icetop,
+                            nue, numu, nutau, wimp_sun, wimp_earth
+      -w WIMPMASS, --mass=WIMPMASS
+                            only for WIMP MC: mass of the simulated WIMP
+      -c WIMPCHANNEL, --chan=WIMPCHANNEL
+                            only for WIMP MC: decay channel of the simulated WIMP
+      -a, --allrootfiles    should we write a .root file for every input file?
+      -s, --domsimulator    specify this option if the data was produced with
+                            DOMSimulator
+
+For experimental data, most of the default configuration is fine. Use as
+such::
+
+    $ python lib/icecube/std_processing/level2_Master.py -i . -o . -r 118300 -f 0 -t -g Level2_IC86.2011_data_Run00118300_0608_GCD.i3.gz
+    Warning in <TUnixSystem::SetDisplay>: DISPLAY not set, setting it to
+    Logging configured from file ./log4cplus.conf
+    Loading daq-decode........................................ok
+    Loading libBadDomList.....................................ok
+    Module iceprod.modules not found. Will not define IceProd Class
+    GCD is used
+    GCD file to use: Level2_IC86.2011_data_Run00118300_0608_GCD.i3.gz
+    PFFilt_PhysicsTrig_PhysicsFiltering_Run00118300_Subrun00000000_00000000.meta.xml
+    PFFilt_PhysicsTrig_PhysicsFiltering_Run00118300_Subrun00000000_00000000.i3
+    list of input files to actually process: ['Level2_IC86.2011_data_Run00118300_0608_GCD.i3.gz', './PFFilt_PhysicsTrig_PhysicsFiltering_Run00118300_Subrun00000000_00000000.i3']
+    Output file will be written to .
+    going to process all events
+    !!! DOMSimulator tweaks are disabled !!!
+
+    ... (many, many lines of output) ...
+
+.. note::
+
+   This will have many false positive error messages, which you can ignore.
+
+This may take a while for a full PFFilt file (2-4 hours is normal).
+
+At the end, you should get files named::
+
+    Level2_IC86.2011_data_Run00118300_Part00000000.i3.bz2
+    Level2_IC86.2011_data_Run00118300_Part00000000.root
+    Level2_IC86.2011_data_Run00118300_Part00000000.xml
+    Level2_IC86.2011_data_Run00118300_Part00000000_EHE.i3.bz2
+    Level2_IC86.2011_data_Run00118300_Part00000000_IT.i3.bz2
+    Level2_IC86.2011_data_Run00118300_Part00000000_SLOP.i3.bz2
+    Level2_IC86.2011_data_Run00118300_Part00000000_gaps.txt
+
+Simulation
+----------
+
+An example of how to run L2 on a generated simulation file.
+
+I am assuming you have a GCD and i3 file::
+
+    $ cp /data/sim/IceCube/2011/generated/CORSIKA-in-ice/10809/00000-00999/IC86.2011_corsika.010809.000000.i3.bz2 .
+    $ cp /data/sim/sim-new/downloads/GCD/GeoCalibDetectorStatus_IC86.55697_corrected_V2.i3.gz .
+
+Next, load the environment::
+
+    $ ./env-shell.sh
+    ************************************************************************
+    *                                                                      *
+    *                   W E L C O M E  to  I C E T R A Y                   *
+    *                                                                      *
+    * Version icerec.releases.IC2011-L2_V12-08-00_IceSim4compat     r124504 *
+    *                                                                      *
+    *                You are welcome to visit our Web site                 *
+    *                        http://icecube.umd.edu                        *
+    *                                                                      *
+    ************************************************************************
+    
+    Icetray environment has:
+       I3_SRC       = /scratch/dschultz/IC86_2011/src
+       I3_BUILD     = /scratch/dschultz/IC86_2011/build
+       I3_PORTS     = /cvmfs/icecube.wisc.edu/py2-v1/RHEL_6_x86_64/i3ports
+       Python       = Python 2.7.3
+
+Because this is simulation, L1 still needs to be run to turn it into a
+PFFilt-like file. Get the latest L1 script from::
+
+    $ svn export http://code.icecube.wisc.edu/svn/projects/std-processing/trunk/python/online_SimulationFiltering.py
+
+This script has various options::
+
+    $ python online_SimulationFiltering.py -h
+    Loading daq-decode........................................ok
+    Loading libBadDomList.....................................ok
+    Module iceprod.modules not found. Will not define IceProd Class
+    Usage: online_SimulationFiltering.py [options]
+    
+    Options:
+      -h, --help            show this help message and exit
+      -i INDIR, --indir=INDIR
+                            directory where the input files are located
+      -o OUTDIR, --outdir=OUTDIR
+                            write output to this directory
+      --infile=INFILE       Input  i3 file to process
+      --outfile=OUTFILE     Output i3 file
+      -g GCDFILE, --gcd=GCDFILE
+                            GCD file for input i3 file
+      -t, --tar             Input files are tared in the data warehouse
+      -r RUNNUM, --runnumber=RUNNUM
+                            simulation dataset to process)
+      -f FILENUM, --filenumber=FILENUM
+                            file number of dataset to process
+      -n NUMEVENTS, --nevents=NUMEVENTS
+                            Number of events to process (default: all)
+      -q, --qify            Should we Qify MC?  By default MC files are already in
+                            Q format
+      --retrigger           Apply trigger simulation.  Normally you should do
+                            this, as input simulation will be generator level
+      -y MCTYPE, --mctype=MCTYPE
+                            type of MC to be processed: corsika, corsika_icetop,
+                            nugen_nue, nugen_numu, nugen_nutau, genie_nue,
+                            genie_numu, genie_nutau, wimp_sun, wimp_earth
+      -w WIMPMASS, --mass=WIMPMASS
+                            only for WIMP MC: mass of the simulated WIMP
+      -c WIMPCHANNEL, --chan=WIMPCHANNEL
+                            only for WIMP MC: decay channel of the simulated WIMP
+      -s, --domsimulator    is it DOMSIMULATOR data?
+      -p MBPRESCALE, --prescale=MBPRESCALE
+                            FilterMinBias prescale factor
+
+Pay special attention to the :code:`--domsimulator` option. IceSim3 needs
+this option.  The :code:`--retrigger` option is also needed occasionally,
+but not for any of the recent IceSim4 datasets.
+
+::
+
+    $ python online_SimulationFiltering.py -i . -o . --infile=IC86.2011_corsika.010809.000000.i3.bz2 -r 10809 -f 0 -g GeoCalibDetectorStatus_IC86.55697_corrected_V2.i3.gz --outfile PFFilt_IC86.2011_corsika.010809.000000.i3.bz2 -y corsika
+    Loading daq-decode........................................ok
+    Loading libBadDomList.....................................ok
+    Module iceprod.modules not found. Will not define IceProd Class
+    !!! DOMSimulator tweaks are disabled !!!
+    Using nominal WaveCalibrator droop options
+    
+    ... (many, many lines of output) ...
+
+
+This may take a while for a full simulation file (30 minutes to 1 hour).
+
+At the end, you should get files named::
+
+    PFFilt_IC86.2011_corsika.010809.000000.i3.bz2
+
+Note that if you named your output file something else, you should rename
+it to this style or L2 will not find it.
+
+Now get the latest L2 script from::
+
+    $ svn export http://code.icecube.wisc.edu/svn/projects/std-processing/trunk/python/level2_Master.py
+
+The next step is to run through L2, which is much like experimental data
+but with the :code:`--mc` flag::
+
+    $ python level2_Master.py -i . -o . -r 10809 -f 0 -g GeoCalibDetectorStatus_IC86.55697_corrected_V2.i3.gz --mc -y corsika
+    Warning in <TUnixSystem::SetDisplay>: DISPLAY not set, setting it to
+    Logging configured from file ./log4cplus.conf
+    Loading daq-decode........................................ok
+    Loading libBadDomList.....................................ok
+    Module iceprod.modules not found. Will not define IceProd Class
+    GCD is used
+    Output file will be written to .
+    going to process all events
+    !!! DOMSimulator tweaks are disabled !!!
+
+    ... (many, many lines of output) ...
+
+.. note::
+
+   This will have many false positive error messages, which you can ignore.
+
+This may take a while (1 hour is normal).
+
+At the end, you should get files named::
+
+    Level2_IC86.2011_corsika.010809.000000.i3.bz2
+    Level2_IC86.2011_corsika.010809.000000.xml
+    Level2_IC86.2011_corsika.010809.000000_SLOP.i3.bz2
+

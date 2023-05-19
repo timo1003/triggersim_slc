@@ -1,0 +1,130 @@
+
+IC86_2014
+=========
+
+Documentation and examples for running L1 and L2 filtering on IC86_2014
+data and simulation.
+
+Environment Setup
+-----------------
+
+First obtain a copy of the IceRec meta-project::
+
+    $ svn co http://code.icecube.wisc.edu/svn/meta-projects/icerec/releases/IC2014-L2_V14-02-00 src
+    $ mkdir build
+    $ cd build
+    $ cmake -DCMAKE_BUILD_TYPE=Release -DUSE_CINT=True ../src
+    $ make
+
+.. note::
+
+   The IceRec version listed here is the special L2 variant for 2014.
+
+.. caution::
+
+   The :code:`-DUSE_CINT=True` is important to make sure `dst-extractor`
+   is built, which L2 filtering requires to load properly.
+
+.. hint::
+
+    :code:`make -j12` on servers will run 12 threads of compiling in parallel,
+    building your meta-project faster.
+
+Possible Errors
+'''''''''''''''
+
+* glshovel
+
+  A glshovel cmake error like this::
+
+    CMake Error: The following variables are used in this project, but they are set to NOTFOUND.
+    Please set them or make sure they are set and tested correctly in the CMake files:
+    GLUT_Xmu_LIBRARY (ADVANCED)
+        linked by target "glshovel" in directory /scratch/dschultz/IC86_2014/src/glshovel
+        
+    -- Configuring incomplete, errors occurred!
+    
+  The solution is to delete the glshovel project, since it is old and unsupported.
+    
+  ::
+    
+    $ rm -rf ../src/glshovel
+
+
+Experimental Data
+-----------------
+
+An example of how to run L2 on a PFFilt file (not that you should ever do
+this yourself, as production has already done it.)
+
+I am assuming you have a GCD and i3 file::
+
+    $ cp /data/exp/IceCube/2014/filtered/PFFilt/0609/PFFilt_PhysicsFiltering_Run00124852_Subrun00000000_00000000.tar.bz2 .
+    $ cp /data/exp/IceCube/2014/filtered/level2/0609/Run00124852/Level2_IC86.2014_data_Run00124852_0609_0_94_GCD.i3.gz .
+
+Next, load the environment::
+
+    $ ./env-shell.sh
+    ************************************************************************
+    *                                                                      *
+    *                   W E L C O M E  to  I C E T R A Y                   *
+    *                                                                      *
+    *       Version icerec.releases.IC2014-L2_V14-02-00     r141213        *
+    *                                                                      *
+    *                You are welcome to visit our Web site                 *
+    *                        http://icecube.umd.edu                        *
+    *                                                                      *
+    ************************************************************************
+
+    Icetray environment has:
+       I3_SRC       = /scratch/dschultz/IC86_2014/src
+       I3_BUILD     = /scratch/dschultz/IC86_2014/build
+       I3_PORTS     = /cvmfs/icecube.wisc.edu/py2-v1/RHEL_6_x86_64/i3ports
+       Python       = Python 2.7.3    
+
+The :code:`process.py` script has various options::
+
+    $ filterscripts/resources/scripts/offlineL2/process.py -h
+    Module iceprod.modules not found. Will not define IceProd Class
+    Usage: process.py [options]
+    
+    Options:
+      -h, --help            show this help message and exit
+      -s, --simulation      Mark as simulation (MC)
+      -i INFILE, --input=INFILE
+                            Input i3 file(s)  (use comma separated list for
+                            multiple files)
+      -g GCDFILE, --gcd=GCDFILE
+                            GCD file for input i3 file
+      -o OUTFILE, --output=OUTFILE
+                            Output i3 file
+      -n NUM, --num=NUM     Number of frames to process
+      --dstfile=DSTFILE     DST root file (should be .root)
+      --gapsfile=GAPSFILE   gaps text file (should be .txt)
+      --icetopoutput=ICETOPOUTPUT
+                            Output IceTop file
+      --eheoutput=EHEOUTPUT
+                            Output EHE i3 file
+      --slopoutput=SLOPOUTPUT
+                            Output SLOP file
+      --rootoutput=ROOTOUTPUT
+                            Output root file
+      --photonicsdir=PHOTONICSDIR
+                            Directory with photonics tables
+
+For experimental data, most of the default configuration is fine. Use as
+such::
+
+    $ filterscripts/resources/scripts/offlineL2/process.py -i PFFilt_PhysicsFiltering_Run00124852_Subrun00000000_00000000.tar.bz2 -g Level2_IC86.2014_data_Run00124852_0609_0_94_GCD.i3.gz -o Level2_IC86.2014_data_Run00124852_Part00000000.i3.bz2
+    Warning in <TUnixSystem::SetDisplay>: DISPLAY not set, setting it to
+    Module iceprod.modules not found. Will not define IceProd Class
+    infiles:  ['Level2_IC86.2014_data_Run00124852_0609_0_94_GCD.i3.gz', 'PFFilt_PhysicsFiltering_Run00124852_Subrun00000000_00000000.tar.bz2']
+    ... (many lines of output) ...
+
+This may take a while for a full PFFilt file (2-3 hours is normal).
+
+At the end, you should get a file named::
+
+    Level2_IC86.2014_data_Run00124852_Part00000000.i3.bz2
+
+If you want the other files, specify filenames for those options.

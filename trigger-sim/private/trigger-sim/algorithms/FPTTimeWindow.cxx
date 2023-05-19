@@ -2,7 +2,6 @@
 #include <boost/foreach.hpp>
 
 using namespace std;
-extern int global= 0;
 FPTTimeWindow::FPTTimeWindow(unsigned int hit_min, unsigned int hit_max, double slcfraction_min,double time_window, double time_window_separation) 
   : hit_min_(hit_min), hit_max_(hit_max),slcfraction_min_(slcfraction_min), time_window_(time_window), time_window_separation_(time_window_separation) 
 {
@@ -19,7 +18,6 @@ FPTTimeWindow::~FPTTimeWindow() {}
 
 FptHitIterPairVectorPtr FPTTimeWindow::FPTFixedTimeWindows(FptHitVectorPtr hits,double time_window_separation)
 {
-  global++;
   // The return variable is a std::vector of pairs, each pair is the begin/end iterators for the time window
   FptHitIterPairVectorPtr FPTtriggerWindows(new FptHitIterPairVector());
 
@@ -54,6 +52,8 @@ FptHitIterPairVectorPtr FPTTimeWindow::FPTFixedTimeWindows(FptHitVectorPtr hits,
     // Define the times of this trigger window
     double startTime = timeWindowStart;
     double stopTime  = startTime + time_window_;
+    //cout <<"timewin"<<startTime<<endl;
+    //cout <<"timewinend"<<stopTime<<endl;
     
     log_debug("TimeWindow = (%f, %f)", startTime, stopTime);
     /*
@@ -122,8 +122,7 @@ FptHitIterPairVectorPtr FPTTimeWindow::FPTFixedTimeWindows(FptHitVectorPtr hits,
     // in window, increment counter
         count++;
         if (nextTime == hits->back().time) {
-        if (global==26){
-    }
+  
          end_reached =true;
          endHit =hits->end();
             }
@@ -140,8 +139,7 @@ FptHitIterPairVectorPtr FPTTimeWindow::FPTFixedTimeWindows(FptHitVectorPtr hits,
       
 
       // Save the pointers
-      //cout <<"timewin"<<startTime<<endl;
-      //cout <<"timewinend"<<stopTime<<endl;
+     
       //cout<<"save tw"<<beginHit->time<<endl;
       //cout<<"save tw end"<<endHit->time<<endl;
         
@@ -180,7 +178,6 @@ FptHitIterPairVectorPtr FPTTimeWindow::FPTFixedTimeWindows(FptHitVectorPtr hits,
       }
       double slc_fraction = static_cast<double>(slc_count) / (slc_count + hlc_count);
       if (slc_fraction > slcfraction_min_) {
-          if (global==26){
           /*
           cout <<"Hits timewindow"<<count<<endl;
           cout <<"timewin"<<startTime<<endl;
@@ -188,7 +185,6 @@ FptHitIterPairVectorPtr FPTTimeWindow::FPTFixedTimeWindows(FptHitVectorPtr hits,
           cout <<"Hits timewindow"<<count<<endl;
           cout <<"SLCfrac timewin"<<slc_fraction<<endl;
          */
-          }
           FptHitIterPair FPTtriggerWindow(beginHit, endHit);
           FPTtriggerWindows->push_back(FPTtriggerWindow);
           break;

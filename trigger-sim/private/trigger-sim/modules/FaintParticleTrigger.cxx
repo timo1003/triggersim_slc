@@ -213,9 +213,15 @@ void FaintParticleTrigger::DAQ(I3FramePtr frame){
     std::cout<<"After sorting end"<<hits->end()->time<<endl;
     
     */
+    std::vector<I3Trigger> tlist;
     sort(hits->begin(), hits->end());
+    if (hits->size()>1){
 
-    std::vector<I3Trigger> tlist =RunTrigger(hits, geo);
+        tlist =RunTrigger(hits, geo);
+    }
+        
+
+        
 
 
 

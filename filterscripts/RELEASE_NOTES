@@ -1,0 +1,260 @@
+
+.. _filterscripts-release-notes:
+
+Release Notes
+=============
+
+main
+----
+
+Dec 20, 2021 E. Blaufuss (blaufuss AT umd edu)
+----------------------------------------------
+IceTray Release V01-03-00
+* Update docs to reflect current Github location of code
+* Include IceTop hit count in follouwp event summary information from pole (alerteventfollowup.py)
+     * Note this was deployed to pole in May 2021...
+* include needed modules for icetop processing for hit counter at pole (baseproc.py, baseproc_onlinecalibration.py)
+* Add icetophitcounter.py
+* Adapt to new I3HLCTankPulseMerger -> I3TankPulseMerger
+* Updated icetop L2 processing settings:  level2_Reconstruction_IceTop.py
+
+Feb 11, 2021
+------------
+Combo release V01-02-00
+* Updates to some keep lists to keep Polyplopia MCTree info objects.  (Fixes #2411)
+
+Feb. 5, 2020 Alex Olivas (aolivas@umd.edu)
+-------------------------------------------
+Combo Release V00-00-01
+
+.. note:: 
+  Default behavior of "all_filters" changed to apply SPECorrections
+  (needs_wavedeform_spe_corr = True).   This has been the standard for several years now.
+
+* Added option to enable SPE correction (Pass2) for simulation.
+* Set default value of SPE correction to true
+
+Dec. 20, 2019 Alex Olivas (aolivas@umd.edu)
+-------------------------------------------
+Combo Release V00-00-00
+
+Combo release: December 18, 2019 E. Blaufuss (blaufuss @ umd.edu)
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+* several python3 compatiblity changes (print(print))
+* add first version of pass3 processing scripts.
+* rewritten monopole filter and L2 processing scripts (cleanups)
+* #2347: Shadow filter in simulations does not vary moon/sun position
+
+2019 Season
+-----------
+
+V19-07-00 
+""""""""" 
+* include Alert short message copy in serialized frame data sent from pole
+* Added GRECOOnlineFilter for online LE track candidate detection
+* Added IceACT trigger/filter
+* Removed some unneeded BSM group reconstructions
+
+
+2018 Season
+-----------
+
+V18-12-01
+"""""""""
+* Fixed undefined stats variable
+* Updated simulation_keeps
+* Fixed undefined variable in alerteventfollowup.py
+* Added track length in detector to GFU messages (needed for high-energy muon alerts)
+* Fix IceACT trigger filter (properly decode the trigger information for this trigger)
+
+V18-06-00
+"""""""""
+* include FlaryDOM search online (jbraun)
+* new alert event followup writer: unifies EHE, HESE, GFU, ESTRES writers
+* removed old alert followup writers (Ehe, hese, gfu specialized ones)
+* new iceact trigger filter
+* (r157285) Bugfix for (r156522)
+* Bugfix for FSSFilter + IC79 in pass2
+* Modified SimurationFiltering.py to keep SplitUncleanedInIcePulsesTimeRange that is renamed to SplitInIcePulsesTimeRange in Rehydration.py and used by level3-filter-muon
+
+2017 Season
+-----------
+
+V17-05-03
+"""""""""
+* (r156389) Handles scintillators and IceAct correctly now.
+* (r156522) Only process events with good start and end time.
+
+V17-05-02
+"""""""""
+* Includes IC79 SPE fits.
+
+V17-05-01
+"""""""""
+* Bugfix r156184 EHE->HighQ needed for pass2.
+* Uses I3Reader segment instead of module for staging support.
+
+V17-05-00
+"""""""""
+* Release for start of 2017 season
+* Rename Online L2 filter to:  OnlineL2Filter_17
+* GFU filter updated and using new BDT and higher passing rate.
+
+  * support BDT and pdfs for this included.
+
+V17-04-01
+"""""""""
+* Cleaned out the last of the ACER references
+
+V17-04-00
+"""""""""
+* Release for 24hr test run and start of pass2 processing
+* Replaced I3DST13 with I3DST16.
+* Removed OFU option in simulation script
+* Added keepkeys for new MC frame objects
+* New filters in 2017:
+  
+  * HighQFilter_17
+  * ESTReSFilter and followup (alerts online)
+  * EHE filter no longer selects events (precale 0)
+  * DeepCoreFilter_TwoLayerExp removed pre LE-OSC group request
+  * Additional reco objects in OnlineL2Filter
+  * New GFUFilter for "neutrino17" alerts
+  * Remove IceTop recos from L1 filter, all done and checked at L3 now
+    
+* Final SPE correction files for pass2
+* Pass2 scripts ready for iceprod1
+* GapsWriter: Min gaps time set to 1 second (default is 30)
+
+
+2016 Season
+-----------
+
+V16-05-01
+"""""""""
+* First release for 2016 full season start (V16-05-00 for 24 test run)
+* r137038 - Uses astro instead of coordinate-service
+* Removed dependence on coordinate-services from I3FSSCandidate_13, I3ShadowFilter_13, and I3GCFilter_13 replaced astronomical calculations with astro project
+* migrated to recclasses
+* Implemented changes to OnlineL2 and GFUFilter for the 2016 season:
+
+ - SplineMPE in OnlineL2 has been tuned for better performance and stability
+ - Error estimators now run only after the GFUFilter
+ - GFUFilter events not emit a full followup message (GCDQP frames or diffs)
+
+* Added Monopole_16 filter, ScintMinBias and 2 station trigger for IceTop
+* removed unused filters (OFUFilter, GCFilter)
+* Add SPE correction file for 2016 season
+* renamed all JSON reports to I3Live for realtime alerts (include _16 in name)
+  and reformatted the JSON messages to a more sensible format
+* Several L2 changes
+
+2015 Season
+-----------
+
+V16-01-00
+"""""""""
+
+This adds scintillator support and an EHE alert. Used in L1 in January 2016.
+
+* r139972,r140718 - special OM (scintillator) support
+* r139669,r139688 - more moni2.0 values
+* r139520-r139646 - add an EHE alert
+
+V15-05-01
+"""""""""
+
+This was used for L1 and L2 data processing.
+
+* r132509 - gfu filter time stamps in ISO 8601
+* r132431 - add I3DAQDecodeException to the special list that saves "everything"
+* r132428 - latest spe corrections
+* r132372,r132471,r132515,r132516 - enable MuEx energy reconstruction with compat option
+* r132201 - remove SDST_FitlerMinBias in L2
+
+V15-05-00
+"""""""""
+
+* r132086 - optionally use the SPE peak correction in L2 rehydration
+* r132027 - move online bad_doms to a better location
+
+V15-04-00
+"""""""""
+
+* r131906 - MuEx new parameter energy = True to estimate energy
+* r131885 - add ofu and gfu filter keeps
+* r131749,r131850,r131920, - script with SPE injector and Moni 2.0
+* r131841 - pass SPE corrections flag through to wavedeform
+* r131824 - remove SDST_FilterMinBias
+* r131475,r131480 - domain detection is global instead of duplicated in gfu and bdt filters
+* r131227 - MESE filter charge cut updates
+* r131052-r131054 - remove dependence on superdst project
+* r130883 - SLOP filter updates
+* r130488,r131056-r131066,r131455-r131457 - starting event filter
+* r130154,r130165,r131189,r131190,r131432 - gamma-ray follow-up filter
+* r129799 - move OFU bdt file to filterscripts. enable OFU by default on simulation
+* r129793 - reference I3_BUILD instead of I3_SRC
+* r129792 - move SimulationFiltering.py to scripts, remove DOMSimulator
+* r129752,r129794 - python modules are already conditional, don't need If parameter
+* r129595 - add triggerIDs to the configuration of TriggerSplitter
+* r128958 - update README_FILTERS guidance
+* r126254 - keep frame object to allow EHE events in simulation
+* r126043 - removed unnecessary pfauxilary loading
+* r125347,r127579,r127610 - update references to legacy photonics and spline tables
+* r125202-r125277,r127541-r127549,r127736,r127766 - script to make SDST from raw tape files
+* r124970,r126324,r128989-r129246 - add icehive splitter segment
+* r124900,r131470 - which_split is in phys_services now
+* r124824 - disable vemcal and ofu in simulation
+* r124816 - lazy importing for jvs
+* r124516-r124812,r124940,r125867-r125876 - replace seededRT with STTools
+* r122505 - only build c++ filterscripts if coordinate-service is present
+* r120990 - include beacon hits
+
+2014 Season
+-----------
+
+V14-05-00
+"""""""""
+
+This was used for L2 data processing and L1 and L2 simulation.
+
+* r119464,r119466,r119474 - FirstPulseCleaning tweaks
+
+V14-04-03
+"""""""""
+
+PnF V15-02-00 Moni 2.0 changes - February 2015
+
+* r129083 - include beacon hits
+
+V14-04-02
+"""""""""
+
+This was used for L1 data processing.
+
+* r119349 - name of TTriger outputs changed
+* r119344 - missing some imports
+
+V14-04-01
+"""""""""
+
+* r119223 - keep SplineMPEFitParams
+* r119125 - enable time windows to be saved in simulation
+* r119078 - make TTrigger use only first pulse
+* r118909,r119204,r119220,r119310 - more ofu filter work
+* r118908,r118989,r119116,r119119 - turn on splines for OnlineL2
+* r118904 - fix paraboloid version issue
+* r118900-r118905 - enable the ofu filter
+
+V14-04-00
+"""""""""
+
+First release of 2014
+
+* r117928 - add sdstarchive option
+* r117550-r117720 - work on the ofu filter
+* r117477 - remove tarball library copying - icerec does this now
+* r117415 - simulation keys and domlauncher changes
+* r117319 - add optical follow-up filter
+* r112771 - new shadowfilter MC time periods for 2014
+* r112459 - Remove writing VEM pulses during IceTop re-calibration
